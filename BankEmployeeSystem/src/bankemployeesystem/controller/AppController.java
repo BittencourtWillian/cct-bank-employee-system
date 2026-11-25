@@ -2,6 +2,7 @@ package bankemployeesystem.controller;
 
 import bankemployeesystem.model.Employee;
 import bankemployeesystem.model.EmployeeFileReader;
+import bankemployeesystem.model.EmployeeSearcher;
 import bankemployeesystem.model.EmployeeSorter;
 import bankemployeesystem.model.MenuOption;
 import bankemployeesystem.view.ConsoleView;
@@ -20,6 +21,7 @@ public class AppController {
     private final ConsoleView view;
     private final EmployeeFileReader fileReader;
     private final EmployeeSorter sorter = new EmployeeSorter();
+    private final EmployeeSearcher searcher = new EmployeeSearcher();
     private List<Employee> employees = new ArrayList<>();
 
     public AppController(ConsoleView view, EmployeeFileReader fileReader) {
@@ -67,7 +69,7 @@ public class AppController {
                     handleSort();
                     break;
                 case SEARCH:
-                    view.showMessage("Search will be implemented next.");
+                    handleSearch();
                     break;
                 case ADD_RECORDS:
                     view.showMessage("Add records will be implemented next.");
@@ -86,6 +88,27 @@ public class AppController {
     private void handleSort() {
         employees = sorter.mergeSort(employees); // keep the sorted list for the search later
         view.showEmployees(employees, NAMES_TO_SHOW);
+    }
+
+    /**
+     * Asks for a name and finds it with the recursive Binary Search.
+     * The list is sorted first because Binary Search only works on sorted data.
+     */
+    private void handleSearch() {
+        employees = sorter.mergeSort(employees);
+
+        String name = view.askText("Enter the full name to search (e.g. Kate Summer): ");
+        if (name.isEmpty()) {
+            view.showMessage("Name cannot be empty.");
+            return;
+        }
+
+        Employee found = searcher.binarySearch(employees, name);
+        if (found == null) {
+            view.showMessage("No employee found with the name '" + name + "'.");
+        } else {
+            view.showEmployeeDetails(found);
+        }
     }
 
 } // <-- end of the class

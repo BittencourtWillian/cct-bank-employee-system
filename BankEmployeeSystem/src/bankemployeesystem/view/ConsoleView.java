@@ -60,4 +60,19 @@ public class ConsoleView {
         }
         System.out.println("Showing " + count + " of " + employees.size() + " employees.");
     }
+        /** Shows a question and returns what the user typed (without extra spaces). */
+    public String askText(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().trim();
+    }
+
+    /** Shows the details of one employee found by the search. */
+    public void showEmployeeDetails(Employee employee) {
+        System.out.println();
+        System.out.println("Employee found:");
+        System.out.println("  Name         : " + employee.getFullName());
+        System.out.println("  Manager Type : " + employee.getManagerType().getLabel());
+        System.out.println("  Department   : " + employee.getDepartment().getLabel());
+        System.out.println("  Job Title    : " + employee.getJobTitle());
+    }
 }
