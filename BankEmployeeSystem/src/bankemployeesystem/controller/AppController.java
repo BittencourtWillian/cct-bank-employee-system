@@ -2,6 +2,7 @@ package bankemployeesystem.controller;
 
 import bankemployeesystem.model.Employee;
 import bankemployeesystem.model.EmployeeFileReader;
+import bankemployeesystem.model.EmployeeSorter;
 import bankemployeesystem.model.MenuOption;
 import bankemployeesystem.view.ConsoleView;
 import java.io.IOException;
@@ -14,8 +15,11 @@ import java.util.List;
  */
 public class AppController {
 
+    private static final int NAMES_TO_SHOW = 20; // assignment: show the first 20 names
+
     private final ConsoleView view;
     private final EmployeeFileReader fileReader;
+    private final EmployeeSorter sorter = new EmployeeSorter();
     private List<Employee> employees = new ArrayList<>();
 
     public AppController(ConsoleView view, EmployeeFileReader fileReader) {
@@ -60,7 +64,7 @@ public class AppController {
 
             switch (choice) {
                 case SORT:
-                    view.showMessage("Sort will be implemented next.");
+                    handleSort();
                     break;
                 case SEARCH:
                     view.showMessage("Search will be implemented next.");
@@ -76,5 +80,12 @@ public class AppController {
                     break;
             }
         } while (choice != MenuOption.EXIT);
+    } // <-- end of runMenu()
+
+    /** Sorts the list A-Z with the recursive Merge Sort and shows the first 20 names. */
+    private void handleSort() {
+        employees = sorter.mergeSort(employees); // keep the sorted list for the search later
+        view.showEmployees(employees, NAMES_TO_SHOW);
     }
-}
+
+} // <-- end of the class
