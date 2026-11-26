@@ -51,4 +51,26 @@ public class Employee {
         return String.format("%-20s | %-17s | %-17s | %s",
                 getFullName(), managerType.getLabel(), department.getLabel(), jobTitle);
     }
+
+    /**
+     * Validation rule for a new employee name:
+     * first and last name, letters only (hyphen or apostrophe allowed, e.g. "Mary-Jane O'Neil").
+     */
+    public static boolean isValidFullName(String name) {
+        String word = "\\p{L}+(['-]\\p{L}+)*";
+        return name.trim().replaceAll("\\s+", " ").matches(word + "( " + word + ")+");
+    }
+
+    /** Formats a name: removes extra spaces and capitalises each word ("maria  silva" -> "Maria Silva"). */
+    public static String formatName(String name) {
+        String[] words = name.trim().toLowerCase().split("\\s+");
+        StringBuilder result = new StringBuilder();
+        for (String w : words) {
+            if (result.length() > 0) {
+                result.append(" ");
+            }
+            result.append(Character.toUpperCase(w.charAt(0))).append(w.substring(1));
+        }
+        return result.toString();
+    }
 }

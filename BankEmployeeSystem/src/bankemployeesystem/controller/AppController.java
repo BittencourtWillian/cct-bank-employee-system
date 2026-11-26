@@ -1,9 +1,11 @@
 package bankemployeesystem.controller;
 
+import bankemployeesystem.model.Department;
 import bankemployeesystem.model.Employee;
 import bankemployeesystem.model.EmployeeFileReader;
 import bankemployeesystem.model.EmployeeSearcher;
 import bankemployeesystem.model.EmployeeSorter;
+import bankemployeesystem.model.ManagerType;
 import bankemployeesystem.model.MenuOption;
 import bankemployeesystem.view.ConsoleView;
 import java.io.IOException;
@@ -23,6 +25,7 @@ public class AppController {
     private final EmployeeSorter sorter = new EmployeeSorter();
     private final EmployeeSearcher searcher = new EmployeeSearcher();
     private List<Employee> employees = new ArrayList<>();
+    private final List<Employee> newRecords = new ArrayList<>(); // records added by the user
 
     public AppController(ConsoleView view, EmployeeFileReader fileReader) {
         this.view = view;
@@ -72,7 +75,7 @@ public class AppController {
                     handleSearch();
                     break;
                 case ADD_RECORDS:
-                    view.showMessage("Add records will be implemented next.");
+                    handleAddRecords();
                     break;
                 case BINARY_TREE:
                     view.showMessage("Binary tree will be implemented next.");
@@ -109,6 +112,87 @@ public class AppController {
         } else {
             view.showEmployeeDetails(found);
         }
+    }
+
+    /**
+     * Lets the user add one or more employees.
+     * Every value is validated before the record is stored, then the list is
+     * re-sorted and all records added in this session are displayed.
+     */
+    private void handleAddRecords() {
+        while (true) {
+            Employee newEmployee = askNewEmployee();
+            if (newEmployee == null) {
+                view.showMessage("Add cancelled.");
+                break;
+            }
+
+            employees.add(newEmployee);
+            newRecords.add(newEmployee);
+            employees = sorter.mergeSort(employees); // keep the list sorted for Binary Search
+            view.showMessage("Employee added successfully. Total employees: " + employees.size());
+
+            if (!view.askYesNo("Add another employee? (Y/N): ")) {
+                break;
+            }
+        }
+
+        if (!newRecords.isEmpty()) {
+            view.showMessage("\nNewly added records:");
+            view.showEmployees(newRecords, newRecords.size());
+        }
+    }
+
+    /**
+     * Collects and validates the data for one new employee.
+     * Returns null if the user cancels by pressing Enter on the name.
+     */
+    private Employee askNewEmployee() {
+        // 1) Name: must be valid and must not exist already
+        String name;
+        while (true) {
+            name = view.askText("Enter full name (first and last) or press Enter to cancel: ");
+            if (name.isEmpty()) {
+                return null;
+            }
+            if (!Employee.isValidFullName(name)) {
+                view.showMessage("Invalid name. Use letters only and type first and last name (e.g. Maria Silva).");
+                continue;
+            }
+            name = Employee.formatName(name);
+            employees = sorter.mergeSort(employees);
+            if (searcher.binarySearch(employees, name) != null) {
+                view.showMessage("'" + name + "' already exists. Please enter a different name.");
+                continue;
+            }
+            break;
+        }
+
+        // 2) Manager Type: must be one of the enum values
+        ManagerType managerType;
+        while (true) {
+            view.showManagerTypes();
+            managerType = ManagerType.fromInput(view.askText("Choose a Manager Type (number or name): "));
+            if (managerType != null) {
+                break;
+            }
+            view.showMessage("Invalid Manager Type. Please choose one from the list.");
+        }
+
+        // 3) Department: must be an existing department
+        Department department;
+        while (true) {
+            view.showDepartments();
+            department = Department.fromInput(view.askText("Choose a Department (number or name): "));
+            if (department != null) {
+                break;
+            }
+            view.showMessage("Invalid Department. Please choose one from the list.");
+        }
+
+        // First word = first name, the rest = last name (e.g. "Maria da Silva")
+        String[] parts = name.split(" ", 2);
+        return new Employee(parts[0], parts[1], managerType.getLabel(), managerType, department);
     }
 
 } // <-- end of the class

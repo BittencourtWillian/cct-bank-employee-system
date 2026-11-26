@@ -37,4 +37,21 @@ public enum Department {
         }
         return null;
     }
+
+    /**
+     * Converts what the user typed (a list number like "3" or a label like "HR")
+     * into a Department. Returns null when the department does not exist.
+     */
+    public static Department fromInput(String input) {
+        String text = input.trim();
+        try {
+            int number = Integer.parseInt(text);
+            if (number >= 1 && number <= values().length) {
+                return values()[number - 1];
+            }
+            return null; // number outside the list
+        } catch (NumberFormatException e) {
+            return fromLabel(text);
+        }
+    }
 }

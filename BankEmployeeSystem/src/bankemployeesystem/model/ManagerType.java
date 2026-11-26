@@ -34,4 +34,26 @@ public enum ManagerType {
         }
         return EMPLOYEE;
     }
+
+    /**
+     * Converts what the user typed (a list number like "2" or a label like "Manager")
+     * into a ManagerType. Returns null when the input is not a valid Manager Type.
+     */
+    public static ManagerType fromInput(String input) {
+        String text = input.trim();
+        try {
+            int number = Integer.parseInt(text);
+            if (number >= 1 && number <= values().length) {
+                return values()[number - 1];
+            }
+            return null; // number outside the list
+        } catch (NumberFormatException e) {
+            for (ManagerType type : values()) {
+                if (type.label.equalsIgnoreCase(text)) {
+                    return type;
+                }
+            }
+            return null; // text that is not a Manager Type
+        }
+    }
 }
