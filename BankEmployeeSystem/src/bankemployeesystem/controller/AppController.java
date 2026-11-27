@@ -11,6 +11,7 @@ import bankemployeesystem.view.ConsoleView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import bankemployeesystem.model.EmployeeBinaryTree;
 
 /**
  * CONTROLLER: receives the user's choices from the View,
@@ -19,7 +20,7 @@ import java.util.List;
 public class AppController {
 
     private static final int NAMES_TO_SHOW = 20; // assignment: show the first 20 names
-
+    private static final int MIN_TREE_RECORDS = 20; // assignment: at least 20 records in the tree
     private final ConsoleView view;
     private final EmployeeFileReader fileReader;
     private final EmployeeSorter sorter = new EmployeeSorter();
@@ -78,7 +79,7 @@ public class AppController {
                     handleAddRecords();
                     break;
                 case BINARY_TREE:
-                    view.showMessage("Binary tree will be implemented next.");
+                    handleBinaryTree();
                     break;
                 case EXIT:
                     view.showMessage("Goodbye!");
@@ -194,5 +195,30 @@ public class AppController {
         String[] parts = name.split(" ", 2);
         return new Employee(parts[0], parts[1], managerType.getLabel(), managerType, department);
     }
+    /**
+     * Builds the employee hierarchy as a binary tree and shows it.
+     * Employees are inserted by rank (Head Manager first, Employee last), and A-Z
+     * inside each rank, so senior staff end up at the top levels of the tree.
+     */
+    private void handleBinaryTree() {
+        if (employees.size() < MIN_TREE_RECORDS) {
+            view.showMessage("At least " + MIN_TREE_RECORDS + " employees are needed. Currently: "
+                    + employees.size() + ". Please add more records.");
+            return;
+        }
 
+        employees = sorter.mergeSort(employees); // A-Z inside each rank
+        EmployeeBinaryTree tree = new EmployeeBinaryTree();
+
+        // The ManagerType enum is declared from highest to lowest rank
+        for (ManagerType rank : ManagerType.values()) {
+            for (Employee employee : employees) {
+                if (employee.getManagerType() == rank) {
+                    tree.insert(employee); // level-order insertion
+                }
+            }
+        }
+
+        view.showTree(tree.levelOrder(), tree.getHeight(), tree.getNodeCount());
+    }
 } // <-- end of the class

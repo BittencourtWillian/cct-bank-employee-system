@@ -112,4 +112,21 @@ public class ConsoleView {
             System.out.println("Please type Y or N.");
         }
     }
+        /** Prints the tree level by level, followed by its height and node count. */
+    public void showTree(List<List<Employee>> levels, int height, int nodeCount) {
+        System.out.println();
+        System.out.println("=== Bank Employee Hierarchy (level-order traversal) ===");
+        for (int i = 0; i < levels.size(); i++) {
+            System.out.println();
+            System.out.println("Level " + i + " (" + levels.get(i).size() + " employees):");
+            for (Employee e : levels.get(i)) {
+                System.out.println("  - " + e.getFullName()
+                        + " [" + e.getManagerType().getLabel()
+                        + " | " + e.getDepartment().getLabel() + "]");
+            }
+        }
+        System.out.println();
+        System.out.println("Tree height : " + height);
+        System.out.println("Total nodes : " + nodeCount);
+    }
 }
