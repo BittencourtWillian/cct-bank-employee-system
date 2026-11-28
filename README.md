@@ -4,6 +4,7 @@ Java console application developed for the CCT College Dublin Algorithms & Const
 
 **Author:** Willian Cesar Lino Bittencourt Id: 2024419
 **GitHub Link:** [Willian Cesar Lino Bittencourt Id: 2024419](https://github.com/BittencourtWillian/cct-bank-employee-system.git)
+**Video Link:** https://drive.google.com/file/d/1EZKksoKGT3WLbiLTGAzzb2exDnYEtKMC/view?usp=drive_link
 **Organisation chosen:** Bank
 
 ---
